@@ -11,9 +11,6 @@ async function bootstrap() {
     credentials: true
   })
 
-  console.log(configuration().port)
-  console.log(configuration().database)
-
-  await app.listen(4010);
+  await app.listen(configuration().port);
 }
 bootstrap();

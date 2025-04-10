@@ -11,7 +11,7 @@ import configuration from "./config/configuration";
       load: [configuration],
       isGlobal: true,
     }),
-    // MongooseModule.forRoot(configuration().database),
+    MongooseModule.forRoot(configuration().database),
     UsersModule,
     EntitiesModule
   ],
