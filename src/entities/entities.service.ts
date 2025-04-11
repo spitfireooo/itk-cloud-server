@@ -8,6 +8,10 @@ export class EntitiesService {
   constructor(@InjectModel(Entity.name) private entityModel: Model<Entity>) {}
 
   getAll(): Promise<Entity[]> {
-    return this.entityModel.find().exec()
+    return this.entityModel.find().exec();
+  }
+
+  getOne(id: string): Promise<Entity> {
+    return this.entityModel.findById(id).exec();
   }
 }

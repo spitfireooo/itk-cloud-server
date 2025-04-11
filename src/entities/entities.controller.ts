@@ -1,8 +1,8 @@
-import { Controller, Get, HttpCode, HttpStatus } from "@nestjs/common";
+import { Controller, Get, HttpCode, HttpStatus, Param } from "@nestjs/common";
 import { EntitiesService } from "./entities.service";
 import { Entity } from "./schema/entity.schema";
 
-@Controller('entities')
+@Controller('entity')
 export class EntitiesController {
   constructor(private readonly entitiesService: EntitiesService) {}
 
@@ -10,5 +10,11 @@ export class EntitiesController {
   @HttpCode(HttpStatus.OK)
   getAll(): Promise<Entity[]> {
     return this.entitiesService.getAll();
+  }
+
+  @Get('/:id')
+  @HttpCode(HttpStatus.OK)
+  getOne(@Param('id') id: string): Promise<Entity> {
+    return this.entitiesService.getOne(id)
   }
 }

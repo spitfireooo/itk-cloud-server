@@ -11,31 +11,31 @@ export class UsersController {
 
   @Get('')
   @HttpCode(HttpStatus.OK)
-  getAll(): Promise<User[]> {
+  async getAll(): Promise<User[]> {
     return this.userService.getAll();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  getOne(@Param('id') id: string): string {
-    return `Get ${id}`;
+  async getOne(@Param('id') id: string): Promise<User> {
+    return this.userService.getOne(id);
   }
 
-  @Post()
+  @Post('')
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createUserDto: CreateUserDto): string {
-    return `Create user`
+  async signUp(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.userService.signUp(createUserDto);
   }
 
   @Patch(':id')
   @HttpCode(HttpStatus.CREATED)
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): string {
-    return `Update user ${id}`
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User | null> {
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  delete(@Param('id') id: string): string {
-    return `Delete user ${id}`;
+  async delete(@Param('id') id: string): Promise<User | null> {
+    return this.userService.delete(id);
   }
 }
