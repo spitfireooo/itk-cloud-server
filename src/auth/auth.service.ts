@@ -37,15 +37,6 @@ export class AuthService {
     return await this.generateTokens(createUser._id, res);
   }
 
-  // async signIn(user: IUser) {
-  //   const { id, email } = user;
-  //   return {
-  //     id,
-  //     email,
-  //     token: this.jwtService.sign({ id: user.id, email: user.email })
-  //   }
-  // }
-
   async generateTokens(userId: string, res: Response) {
     const accessToken = await this.jwtService.signAsync(
       { userId },
@@ -65,7 +56,7 @@ export class AuthService {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      // expires
+      expires: this.configService.getOrThrow("JWT_REFRESH_EXPIRES"),
     })
 
     return accessToken

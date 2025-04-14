@@ -7,7 +7,7 @@ import { Request } from "express"
 import { JwtPayload } from "../../utils/types/jwt-payload";
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy) {
+export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
 	constructor(
 		private readonly configService: ConfigService,
 		private readonly usersService: UsersService,

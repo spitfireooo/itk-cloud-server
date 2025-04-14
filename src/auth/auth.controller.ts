@@ -1,11 +1,10 @@
-import { Body, Controller, Get, ParseIntPipe, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Res, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { LocalAuthGuard } from "./guards/local-auth.guard";
-import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { SignUpDto } from "./dto/sign-up.dto";
-import { Response, Request } from "express";
+import { Response } from "express";
 import { CurrentUser } from "../utils/decorators/current-user.decorator";
 import { UserDocument } from "../users/schema/user.scheme";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller('auth')
 export class AuthController {
@@ -16,7 +15,7 @@ export class AuthController {
     return this.authService.signUp(signUpDto, res);
   }
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(AuthGuard("local"))
   @Post('sign-in')
   async signIn(
     @CurrentUser() user: UserDocument,
@@ -25,7 +24,12 @@ export class AuthController {
     return this.authService.generateTokens(user.toObject()._id, res);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Post('sign-out')
+  async signOut(@Res({ passthrough: true }) res: Response): Promise<string> {
+    return this.authService.signOut(res);
+  }
+
+  @UseGuards(AuthGuard("jwt-refresh"))
   @Post('refresh')
   async refresh(
     @CurrentUser() user: UserDocument,
@@ -34,14 +38,12 @@ export class AuthController {
     return this.authService.generateTokens(user.toObject()._id, res);
   }
 
-  @Post('sign-out')
-  async logout(@Res({ passthrough: true }) res: Response): Promise<string> {
-    return this.authService.signOut(res);
-  }
-
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard("jwt-refresh"))
   @Get('profile')
-  getProfile(@CurrentUser() user: UserDocument,) {
-    console.log(user)
+  getProfile(@CurrentUser() user: UserDocument) {
+    const userObject = user.toObject(); // Преобразуем в обычный JS-объект
+    delete userObject.password; // Удаляем свойство password
+
+    return userObject;
   }
 }
