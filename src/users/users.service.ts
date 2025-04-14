@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { User } from "./schema/user.scheme";
-import { Model, ModifyResult } from "mongoose";
+import { User, UserDocument } from "./schema/user.scheme";
+import { Model } from "mongoose";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import * as argon2 from "argon2";
@@ -10,7 +10,7 @@ import { AvatarsService } from "../avatars/avatars.service";
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly avatarsService: AvatarsService,
   ) {}
 
@@ -26,24 +26,22 @@ export class UsersService {
     return this.userModel.findOne({ email: email }).exec();
   }
 
-  async signUp(createUserDto: CreateUserDto): Promise<User> {
-    const { email, nickname, password } = createUserDto;
-
-    const userExist = await this.userModel.findOne({
-      where: { email: createUserDto.email },
-    })
+  async create({ email, hashPassword, nickname }: CreateUserDto): Promise<any> {
+    const userExist = await this.userModel.findOne({where: { email }})
     if (userExist)
-      throw new BadRequestException("User already exists");
+      throw new ConflictException("User with this email is already existing");
 
     const logoFilename = await this.avatarsService.generateAndSaveAvatar(nickname)
+
     const createUser = new this.userModel({
       email,
       nickname,
-      password: await argon2.hash(password),
+      password: hashPassword,
       logo: logoFilename,
     });
+    const savedUser = await createUser.save();
 
-    return createUser.save();
+    return await savedUser.toObject;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {

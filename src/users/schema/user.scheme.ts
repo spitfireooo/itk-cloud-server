@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import {Types} from "mongoose";
+import { Types, Document } from "mongoose";
 import { Entity } from "../../entities/schema/entity.schema";
 
+export type UserDocument = User & Document;
 
 @Schema({
   timestamps: true,

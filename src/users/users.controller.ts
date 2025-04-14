@@ -21,12 +21,6 @@ export class UsersController {
     return this.userService.getOne(id);
   }
 
-  @Post('')
-  @HttpCode(HttpStatus.CREATED)
-  async signUp(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.signUp(createUserDto);
-  }
-
   @Patch(':id')
   @HttpCode(HttpStatus.CREATED)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User | null> {
